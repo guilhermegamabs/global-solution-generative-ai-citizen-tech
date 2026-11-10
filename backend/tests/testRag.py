@@ -216,3 +216,8 @@ def testePerguntaCompletaNaoMisturaComAnterior():
 def testePerguntaCurtaSemBaseUsaContexto():
     historico = [{"role": "user", "content": "Quais os sintomas da dengue?"}, {"role": "assistant", "content": "Febre."}]
     assert "dengue" in montarConsulta("Quantas vezes dá para pegar?", historico, baseFraca)
+
+
+def testePerguntaGenericaDeDuasPalavrasUsaContexto():
+    historico = [{"role": "user", "content": "O que é tuberculose?"}, {"role": "assistant", "content": "Doença."}]
+    assert "tuberculose" in montarConsulta("Quais os sintomas?", historico, baseBoa)

@@ -112,7 +112,7 @@ cd backend
 python -m pytest
 ```
 
-98 testes, sem chamar a IA nem baixar modelos: 21 cobrem o RAG (chunking, BM25, guardas, abstenção, bloqueios, citação inválida, dose sem fonte, rota autenticada).
+101 testes, sem chamar a IA nem baixar modelos: 24 cobrem o RAG (chunking, BM25, guardas, abstenção, bloqueios, citação inválida, dose sem fonte, rota autenticada).
 
 ### Avaliação
 

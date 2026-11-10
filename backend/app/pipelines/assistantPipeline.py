@@ -47,6 +47,7 @@ palavrasDeContinuacao = {"e", "isso", "ele", "ela", "dele", "dela", "nesse", "ni
 tentativasSaida = 2
 turnosDeContexto = 2
 limiarAutonoma = 0.5
+palavrasMinimasAutonoma = 3
 
 
 @dataclass
@@ -71,7 +72,7 @@ def montarConsulta(pergunta, historico, base=None):
         return pergunta
     if base is None:
         return combinada
-    if not continua:
+    if not continua and len(tokenizar(pergunta)) >= palavrasMinimasAutonoma:
         sozinha = base.buscar(pergunta, 1)
         if sozinha and sozinha[0].pontuacao >= limiarAutonoma:
             return pergunta
