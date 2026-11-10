@@ -1,0 +1,29 @@
+services:
+  - type: web
+    name: orienta-saude-api
+    runtime: docker
+    plan: free
+    dockerContext: .
+    dockerfilePath: ./backend/Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: GEMINIAPIKEY
+        sync: false
+      - key: GEMINIMODEL
+        value: gemini-2.5-flash
+      - key: DATABASEURL
+        sync: false
+      - key: BREVOAPIKEY
+        sync: false
+      - key: SENDEREMAIL
+        sync: false
+      - key: SENDERNAME
+        value: Orienta Saúde
+      - key: SEGREDOAPP
+        generateValue: true
+      - key: ALLOWEDORIGINS
+        sync: false
+      - key: MOSTRARCODIGONOLOG
+        value: "false"
+      - key: REQUESTTIMEOUT
+        value: "30"

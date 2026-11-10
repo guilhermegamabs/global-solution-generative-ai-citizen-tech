@@ -1,0 +1,12 @@
+.env
+venv/
+.venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+.idea/
+*.db
+secrets.toml
+backend/knowledge/indice/
+backend/evaluation/log*.txt
+backend/tests/contaTesteLocal.txt
