@@ -46,6 +46,7 @@ mensagemForaDoEscopo = "Eu só respondo dúvidas sobre saúde e serviços do SUS
 palavrasDeContinuacao = {"e", "isso", "ele", "ela", "dele", "dela", "nesse", "nisso", "entao", "tambem", "mesmo"}
 tentativasSaida = 2
 turnosDeContexto = 2
+limiarAutonoma = 0.5
 
 
 @dataclass
@@ -58,16 +59,30 @@ class OpcoesAssistente:
     modelo: str | None = None
 
 
-def montarConsulta(pergunta, historico):
+def montarConsulta(pergunta, historico, base=None):
     perguntasAnteriores = [turno["content"] for turno in historico if turno["role"] == "user"]
     if not perguntasAnteriores:
         return pergunta
     palavras = normalizar(pergunta).split()
     curta = len(tokenizar(pergunta)) <= 4
     continua = bool(palavras) and palavras[0] in palavrasDeContinuacao
-    if curta or continua:
-        return " ".join([*perguntasAnteriores[-turnosDeContexto:], pergunta])
-    return pergunta
+    combinada = " ".join([*perguntasAnteriores[-turnosDeContexto:], pergunta])
+    if not (continua or curta):
+        return pergunta
+    if base is None:
+        return combinada
+    if not continua:
+        sozinha = base.buscar(pergunta, 1)
+        if sozinha and sozinha[0].pontuacao >= limiarAutonoma:
+            return pergunta
+    candidatas = [combinada] + [f"{anterior} {pergunta}" for anterior in reversed(perguntasAnteriores[-3:])]
+    melhor, melhorPontuacao = combinada, -1.0
+    for candidata in dict.fromkeys(candidatas):
+        resultados = base.buscar(candidata, 1)
+        pontuacao = resultados[0].pontuacao if resultados else 0.0
+        if pontuacao > melhorPontuacao:
+            melhor, melhorPontuacao = candidata, pontuacao
+    return melhor
 
 
 def removerCitacoes(texto):
@@ -156,7 +171,7 @@ def responderPergunta(pergunta, historico, gerar, base, opcoes=None, tema=None):
         historico = [
             {**turno, "content": guardrails.mascararDadosPessoais(turno["content"])[0]} for turno in historico
         ]
-    consulta = montarConsulta(perguntaUsada, historico)
+    consulta = montarConsulta(perguntaUsada, historico, base)
     saida = Resposta(base, opcoes, consulta, inicio)
 
     if opcoes.protecoes:
